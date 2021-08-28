@@ -81,6 +81,7 @@ def run_script(general_url_website):
     dataframe = pd.DataFrame()
     driver = get_driver(general_url_website)
     for url in get_product_categories(driver, "Telefonie"):
+        product_category = url.split("/", 3)[-1]
         if url != "https://www.coolblue.nl/mobiele-telefoons":
             driver_category = get_driver(url+"/filter")
             if driver_category.find_element_by_xpath('.//div[contains(@class, "cookie-notification__header")]'):
@@ -92,9 +93,9 @@ def run_script(general_url_website):
                     temporary_product = product_card_unfold(product_card)
                     product_card_temporary = pd.DataFrame(temporary_product).transpose().reset_index(drop=True)
                     dataframe = pd.concat([dataframe, product_card_temporary], axis=0)
+                    dataframe["product_category"] = product_category
                 sleep_for_random_interval()
               
-            dataframe["product_category"] = url.split("/", 3)[-1]
         driver.quit()
         
         dataframe = dataframe.rename(columns={0: "product_description", 1: "price", 2: "rating", 3: "amount_reviews", "product_category": "product_category"})

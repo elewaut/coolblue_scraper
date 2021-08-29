@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-@author: belewaut
+@author: elewaut
 """
 
 import pandas as pd
@@ -15,7 +15,7 @@ from random import randint
 def get_driver(URL):
     options = webdriver.ChromeOptions()
     options.headless = False
-    DRIVER_PATH = r'C:/Users/belewaut/Downloads/chromedriver.exe'
+    DRIVER_PATH = r'C:PATH/chromedriver.exe'
     driver = webdriver.Chrome(executable_path=DRIVER_PATH, options=options)
     driver.get(URL)
     return driver
@@ -73,7 +73,7 @@ def sleep_for_random_interval():
     return sleep(randint(1,5))
 
 def dataframe_to_excel(dataframe):
-    dataframe.to_excel(r'C:/Users/belewaut/Downloads/{}_coolblue_raw_data_{}.xlsx'.format(datetime.now().strftime("%Y%m%d"), searched_category_file_name.lower()), index=False, header=True)
+    dataframe.to_excel(r'PATH/{}_coolblue_raw_data_{}.xlsx'.format(datetime.now().strftime("%Y%m%d"), searched_category_file_name.lower()), index=False, header=True)
 
 def run_script(general_url_website, searched_category):
     dataframe = pd.DataFrame()

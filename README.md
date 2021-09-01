@@ -1,1 +1,2 @@
-![occurrence_brands](https://user-images.githubusercontent.com/88783363/131687298-716cc17a-d05f-4fd7-aeb5-7ff2735276c7.png)
+![occ_smartphonebrands](https://user-images.githubusercontent.com/88783363/131687469-94c636f2-8a5e-490a-a34c-e193148bf18a.png)
+

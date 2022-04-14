@@ -2,12 +2,12 @@
 """
 @author: elewaut
 """
-
 import pandas as pd
 from tqdm import tqdm
 from datetime import datetime
 from selenium import webdriver
 from selenium.common import exceptions
+from selenium.webdriver.common.by import By
 from time import sleep
 from random import randint
 
@@ -15,20 +15,20 @@ from random import randint
 def get_driver(URL):
     options = webdriver.ChromeOptions()
     options.headless = False
-    DRIVER_PATH = r'C:PATH/chromedriver.exe'
+    DRIVER_PATH = r'PATH\chromedriver.exe'
     driver = webdriver.Chrome(executable_path=DRIVER_PATH, options=options)
     driver.get(URL)
     return driver
     
 def accept_cookie(driver):
      driver.implicitly_wait(10)
-     driver.find_element_by_xpath('//*[@aria-label="Accepteer onze cookies"]').click()
+     driver.find_element(By.XPATH,'//*[@aria-label="Accepteer onze cookies"]').click()
      return driver
 
 
 def get_product_categories(driver, searched_category):
-    parent_elem = driver.find_element_by_xpath('.//li[contains(@data-category-group, "{}")]'.format(searched_category))
-    child_elements = parent_elem.find_elements_by_xpath('.//div/div/ul/li/span/a')
+    parent_elem = driver.find_element(By.XPATH,'.//li[contains(@data-category-group, "{}")]'.format(searched_category))
+    child_elements = parent_elem.find_elements(By.XPATH, './/div/div/ul/li/span/a')
     product_category_titles = []
     for child in child_elements:
         product_category_titles.append(child.get_attribute('href'))
@@ -38,8 +38,9 @@ def get_product_categories(driver, searched_category):
         pass 
 
 def get_amount_of_pages(driver):
-    if driver.find_elements_by_xpath('//a[contains(@aria-label, "Ga naar de volgende pagina")]'):
-        amount_of_pages = driver.find_elements_by_xpath('//a[contains(@aria-label, "Ga naar pagina")]')[-1].text.strip()
+    if driver.find_element(By.XPATH,'//a[contains(@aria-label, "Ga naar de volgende pagina")]'):
+        amount_of_pages = driver.find_elements(By.XPATH, '//a[contains(@aria-label, "Ga naar pagina ")]')[-1].text.strip()
+        return int(amount_of_pages)
     else:
         return 1
     try:
@@ -48,23 +49,24 @@ def get_amount_of_pages(driver):
         return amount_of_pages
 
 def get_product_cards(driver):
-    product_cards = driver.find_elements_by_xpath('//div[contains(@class, "product-card__details product-card__custom-breakpoint js-product-details")]')
+    product_cards = driver.find_elements(By.XPATH,'//div[contains(@class, "product-card__details product-card__custom-breakpoint js-product-details")]')
     return product_cards
 
 def product_card_unfold(product_card, product_category):
-    product_name = product_card.find_element_by_xpath('.//div/a').text.strip()
+    product_name = product_card.find_element(By.XPATH,'.//div/a').text.strip()
+    print(product_name)
     product_category = product_category
     try:
-        price = product_card.find_element_by_xpath('.//div/span/strong').text.strip()
+        price = product_card.find_element(By.XPATH,'.//div/span/strong').text.strip()
     except exceptions.NoSuchElementException:
         price = ""
     try:
-        temp = product_card.find_element_by_xpath('.//meter[contains(@class, "review-rating__score-meter")]')
+        temp = product_card.find_element(By.XPATH,'.//meter[contains(@class, "review-rating__rating")]')
         rating = temp.get_attribute('value')
     except exceptions.NoSuchElementException:
         rating = ""
     try:
-        review_amount = product_card.find_element_by_xpath('.//span[contains(@class, "review-rating__reviews text--truncate")]').text.strip()
+        review_amount = product_card.find_element(By.XPATH,'.//span[contains(@class, "review-rating__reviews text--truncate")]').text.strip()
     except exceptions.NoSuchElementException:
         review_amount = ""
     return product_name, price, rating, review_amount, product_category
@@ -82,7 +84,7 @@ def run_script(general_url_website, searched_category):
         product_category = url.split("/", 3)[-1]
         print(product_category)
         driver_category = get_driver(url+"/filter")
-        if driver_category.find_element_by_xpath('.//div[contains(@class, "cookie-notification__header")]'):
+        if driver_category.find_element(By.XPATH,'.//div[contains(@class, "cookie-notification__header")]'):
             accept_cookie(driver_category)
         for page in tqdm(range(0, get_amount_of_pages(driver_category))):
             driver_category.get(url+"/filter/?pagina={}".format(page))
@@ -108,4 +110,3 @@ if __name__ == '__main__':
         searched_category = category
         searched_category_file_name = category.replace(" ", "")
         run_script('https://www.coolblue.nl/?pagina={}', searched_category)
-
